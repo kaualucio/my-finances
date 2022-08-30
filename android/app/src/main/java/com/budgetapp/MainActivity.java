@@ -3,6 +3,8 @@ package com.budgetapp;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.swmansion.gesturehandler.react.RNGestureHandlerEnabledRootView;
+
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.ReactRootView;
@@ -35,9 +37,12 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
-    return new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED,
-      new MainActivityDelegate(this, getMainComponentName())
-    );
+    return new ReactActivityDelegate(this, getMainComponentName()) {
+      @Override
+      protected ReactRootView createRootView() {
+      return new RNGestureHandlerEnabledRootView(MainActivity.this);
+      }
+    };
   }
 
   /**

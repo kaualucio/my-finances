@@ -12,6 +12,10 @@ export const THEME = {
       yellow: '#FFB703'
     },
 
+    gray: {
+      500: '#62676D',
+      200: '#C6CDD3'
+    },
     white: '#E0E1DD',
     black: '#14121E'
   },

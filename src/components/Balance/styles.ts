@@ -20,12 +20,7 @@ export const styles = StyleSheet.create({
 
 elevation: 4
   },
-  circle: {
-    marginRight: 10,
-    width: 14,
-    height: 14,
-    borderRadius: 9999,
-  },
+
   containerInfo: {
     flexDirection: 'column'
   },

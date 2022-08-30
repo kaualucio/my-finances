@@ -5,7 +5,7 @@ import { styles } from './styles';
 
 interface TitleSectionProps {
   title: string,
-  icon: ReactElement<IconProps>
+  icon?: ReactElement<IconProps>
 }
 
 function TitleSection({ icon, title }: TitleSectionProps) {

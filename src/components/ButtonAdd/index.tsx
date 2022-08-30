@@ -8,7 +8,7 @@ type ButtonIconProps = TouchableOpacityProps & {
   icon: ReactElement<IconProps>
 }
 
-export function ButtonIcon({icon, ...rest}: ButtonIconProps) {
+export function ButtonAdd({icon, ...rest}: ButtonIconProps) {
   return (
     <TouchableOpacity style={styles.button} {...rest}>
       {icon}

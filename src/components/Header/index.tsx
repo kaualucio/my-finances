@@ -1,15 +1,20 @@
 import { PlusCircle } from 'phosphor-react-native';
-import React from 'react';
+import React, { useRef } from 'react';
 import { Text, View } from 'react-native';
-import { ButtonIcon } from '../ButtonIcon';
+import { ButtonAdd } from '../ButtonAdd';
 import { Title } from '../Title';
 import { styles } from './styles';
 
-function Header() {
+interface HeaderProps {
+  openModal: () => void
+}
+
+function Header({openModal}: HeaderProps) {
+
   return (
     <View style={styles.container}>
       <Title />
-      <ButtonIcon icon={<PlusCircle color="white" size={28} />}  />
+      <ButtonAdd onPress={openModal} icon={<PlusCircle color="white" size={28} />}  />
     </View>
   );
 }

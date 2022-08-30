@@ -1,9 +1,10 @@
+import { THEME } from './../../global/styles/theme';
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 15,
-    width: 100,
+    paddingHorizontal: 10,
+    width: 120,
   },
   graphic: {
     height: 200,
@@ -18,6 +19,6 @@ export const styles = StyleSheet.create({
   },
   monthText: {
     fontSize: 11,
-    color: '#62676D'
+    color: THEME.colors.gray[500]
   }
 })

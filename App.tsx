@@ -4,11 +4,13 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Poppins_200ExtraLight, Poppins_300Light, Poppins_400Regular, Poppins_500Medium, Poppins_700Bold } from '@expo-google-fonts/poppins'
 
-import { HomeScreen } from './src/screens/Home/index';
+
 import { THEME } from './src/global/styles/theme';
 import { getStatusBarHeight } from 'react-native-iphone-x-helper';
+import { Routes } from './src/routes';
+import { gestureHandlerRootHOC, GestureHandlerRootView } from 'react-native-gesture-handler';
 
-export default function App() {
+ function App() {
   const [fontsLoaded] = useFonts({
     Poppins_200ExtraLight, Poppins_300Light, Poppins_400Regular, Poppins_500Medium, Poppins_700Bold 
   });
@@ -16,18 +18,22 @@ export default function App() {
   if(!fontsLoaded) return <Text>Carregando Fontes</Text>
 
   return (
-    <View style={styles.container}>
-      <StatusBar style="auto" />
-      <HomeScreen />
-    </View>
+    <GestureHandlerRootView style={styles.container}>
+      <StatusBar 
+        style="auto" 
+        backgroundColor={THEME.colors.white} 
+      />
+      <Routes />
+    </GestureHandlerRootView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingVertical: getStatusBarHeight(),
+    paddingTop: getStatusBarHeight(),
     backgroundColor: THEME.colors.white,
   },
 });
+
+export default gestureHandlerRootHOC(App)
