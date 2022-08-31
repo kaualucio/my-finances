@@ -11,6 +11,7 @@ import { HistoricItem } from '../../components/HistoricItem';
 import { ModalMenu } from '../../components/ModalMenu';
 import { ModalWallets } from '../../components/ModalWallets';
 import { TitleSection } from '../../components/TitleSection';
+import { useWallet } from '../../context/WalletsContext';
 import { THEME } from '../../global/styles/theme';
 import { styles } from './styles';
 
@@ -38,6 +39,7 @@ const items = [
 ]
 
 function HomeScreen() {
+  const { currentWallet, allMyWallets, isLoading, handleChangeCurrentWallet } = useWallet()
   const modalRef = useRef<Modalize>(null)
   const modalRef2 = useRef<Modalize>(null)
   const navigation = useNavigation()
@@ -53,15 +55,17 @@ function HomeScreen() {
   }
 
   function handleGoToScreen(screen: any) {
+    modalRef.current.close()
     navigation.navigate(screen)
   }
   
+  if(isLoading) return <Text>CARREGANDO...</Text>
 
   return (
     <View  style={styles.container}>
       <Header openModal={openModal} />
       <ModalMenu handleGoToScreen={handleGoToScreen} ref={modalRef} />
-      <ModalWallets ref={modalRef2} /> 
+      <ModalWallets wallets={allMyWallets} ref={modalRef2} /> 
       <ScrollView
       style={{paddingHorizontal: 20,}}
         contentContainerStyle={{
@@ -70,7 +74,7 @@ function HomeScreen() {
         showsVerticalScrollIndicator={false}
         >
           <View style={styles.headerSection}>
-            <TitleSection icon={<Wallet size={24} color={THEME.colors.black} weight="bold" />} title="Casa" />
+            <TitleSection icon={<Wallet size={24} color={THEME.colors.black} weight="bold" />} title={currentWallet?.name} />
             <TouchableOpacity onPress={openModal2}>
               <Text style={styles.linkSection}>Trocar Carteira</Text>
             </TouchableOpacity>

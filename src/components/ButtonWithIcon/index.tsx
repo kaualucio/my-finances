@@ -6,7 +6,7 @@ import { styles } from './styles'
 
 type ButtonWithIconProps = TouchableOpacityProps & {
   icon: ReactElement<IconProps>,
-  title: string
+  title: string,
 }
 
 export function ButtonWithIcon({icon, title, ...rest}: ButtonWithIconProps) {

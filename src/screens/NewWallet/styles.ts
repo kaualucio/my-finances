@@ -12,6 +12,10 @@ export const styles = StyleSheet.create({
     paddingHorizontal: 20,
     position: "relative",
   },
+  formField: {
+    zIndex: 0,
+    marginBottom: 15
+  },
   button: {
     flexDirection: "row",
     justifyContent: 'center',
