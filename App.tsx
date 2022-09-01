@@ -12,6 +12,8 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Routes } from './src/routes';
 import { db } from './src/databases/sqlite';
 import { WalletContextProvider } from './src/context/WalletsContext';
+import { IncomeContextProvider } from './src/context/IncomeContext';
+import { SpendingContextProvider } from './src/context/SpendingContext';
 
 SplashScreen.preventAutoHideAsync()
 
@@ -32,6 +34,33 @@ function App() {
           );
         });
 
+        db.transaction((tx) => {
+          tx.executeSql(
+            "CREATE TABLE IF NOT EXISTS incomes (id varchar(255) primary key not null, name varchar(255) not null, walletId varchar(255) not null, value number not null, description varchar(255), created_at datetime, updated_at datetime, CONSTRAINT fk_walletId FOREIGN KEY (walletId) REFERENCES wallets (id));",
+            [],
+          );
+        });
+
+        db.transaction((tx) => {
+          tx.executeSql(
+            "CREATE TABLE IF NOT EXISTS spendings (id varchar(255) primary key not null, name varchar(255) not null, walletId varchar(255) not null, value number not null, description varchar(255), created_at datetime, updated_at datetime, CONSTRAINT fk_walletId FOREIGN KEY (walletId) REFERENCES wallets (id));",
+            [],
+          );
+        });
+
+        // db.transaction((tx) => {
+        //   tx.executeSql(
+        //     "DELETE FROM incomes",
+        //     [],
+        //   );
+        // });
+
+        // db.transaction((tx) => {
+        //   tx.executeSql(
+        //     "DELETE FROM spendings",
+        //     [],
+        //   );
+        // });
 
       } catch (e) {
         console.warn(e);
@@ -63,7 +92,11 @@ function App() {
         backgroundColor={THEME.colors.white} 
       />
       <WalletContextProvider>
-        <Routes />
+        <IncomeContextProvider>
+          <SpendingContextProvider>
+            <Routes />
+          </SpendingContextProvider>
+        </IncomeContextProvider>
       </WalletContextProvider>
     </GestureHandlerRootView>
   );

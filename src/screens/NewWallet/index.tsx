@@ -6,13 +6,16 @@ import { FormLabel } from '../../components/FormLabel'
 import { styles } from './styles'
 import { ButtonWithoutIcon } from '../../components/ButtonWithoutIcon'
 import Wallet from '../../databases/sqlite/services/Wallet'
+import { useWallet } from '../../context/WalletsContext'
 export default function NewWallet() {
+  const { handleRefetchData } = useWallet()
   const [walletName, setWalletName] = useState('')
   const [walletDescription, setWalletDescription] = useState('')
 
   async function handleCreateWallet() {
     try {
       await Wallet.create({name: walletName})
+      handleRefetchData()
       Alert.alert('Sucesso!', 'Sua carteira foi criada com sucesso!')
     } catch (error) {
       Alert.alert('Algo deu errado :(!', 'Ocorreu um erro ao criar sua carteira, tente novamente')

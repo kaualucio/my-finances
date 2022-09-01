@@ -1,4 +1,4 @@
-import { View, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, Text, Platform } from 'react-native'
+import { View, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, Text, Platform, Alert } from 'react-native'
 import React, { useState } from 'react'
 import ModalSelector from 'react-native-modal-selector'
 import { HeaderNavigation } from '../../components/HeaderNavigation'
@@ -7,10 +7,56 @@ import { FormLabel } from '../../components/FormLabel'
 import { styles } from './styles'
 import { ButtonWithoutIcon } from '../../components/ButtonWithoutIcon'
 import { THEME } from '../../global/styles/theme'
+import { useWallet } from '../../context/WalletsContext'
+import Spending from '../../databases/sqlite/services/Spending'
+import { useSpending } from '../../context/SpendingContext'
+import { formatPriceValue } from '../../utils/formatPriceValue'
 
 export default function NewSpending() {
-  const [selectedWallet, setSelectedWallet] = useState('')
-   let index = 0;
+  const { allMyWallets, handleRefetchHistory } = useWallet()
+  const { handleRefetchDataSpending } = useSpending()
+
+  const [selectedWallet, setSelectedWallet] = useState('Selecione a carteira')
+  const [name, setName] = useState('')
+  const [value, setValue] = useState('')
+  const [description, setDescription] = useState('')
+   
+  async function handleCreateSpending() {
+    try {
+      let selectedWalletId = handleSelectWalletByName(selectedWallet)
+      
+      if(!name || !value) {
+        return Alert.alert('Campos Inválidos :(', 'Os campos marcados com (*) são obrigatórios, preencha-os para')
+      }
+      
+      if(!selectedWalletId) {
+        return Alert.alert('Carteira Inválida :(', 'Selecione uma carteira válida para continuar')
+      }
+
+
+      await Spending.create({name, value: formatPriceValue(value), walletId: selectedWalletId,  description})
+      handleRefetchDataSpending()
+      handleRefetchHistory()
+      setName('')
+      setSelectedWallet('Selecione a carteira')
+      setValue('')
+      setDescription('')
+      Alert.alert('Sucesso!', 'Sua despesa foi adicionada com sucesso com sucesso!')
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Algo deu errado :(', 'Ocorreu um erro ao criar sua carteira, tente novamente')
+    }
+  }
+
+  function handleSelectWalletByName(value: string) {
+    let walletExists = allMyWallets.find(wallet => wallet.name === value)
+    if(walletExists) {
+      return walletExists.id
+    }else {
+      return false
+    }
+  }
+
   return (
     <View style={styles.container}>
       <HeaderNavigation title="Nova Despesa" />
@@ -21,7 +67,7 @@ export default function NewSpending() {
           style={styles.form}>
           <View style={styles.formField}>
             <FormLabel label="Título da despesa*" />
-            <Input keyboardType="default" />
+            <Input value={name} onChangeText={value => setName(value)} keyboardType="default" />
           </View>
           <View style={styles.formField}>
             <FormLabel label="Carteira*" />
@@ -42,26 +88,21 @@ export default function NewSpending() {
               cancelContainerStyle={styles.cancelContainerStyle}
               cancelTextStyle={styles.cancelTextStyle}
               cancelText="Cancelar"  
-              data={[
-                { key: index++, label: 'Carteira 1'},
-                { key: index++, label: 'Carteira 2'},
-                { key: index++, label: 'Carteira 3'},
-                { key: index++, label: 'Carteira 4'}
-              ]}
-              initValue="Selecione a carteira"
+              data={allMyWallets.map(wallet => { return { key: wallet.id, label: wallet.name } })}
+              initValue={selectedWallet}
               onChange={(option)=> setSelectedWallet(option.label) } 
             />
           </View>
           <View style={styles.formField}>
             <FormLabel label="Valor R$*" />
-            <Input keyboardType="numeric" />
+            <Input value={value} onChangeText={value => setValue(value)} keyboardType="numeric" />
           </View>
           <View style={styles.formField}>
             <FormLabel label="Descrição" />
-            <Input textArea multiline keyboardType="default" />
+            <Input value={description} onChangeText={value => setDescription(value)} textArea multiline keyboardType="default" />
           </View>
           <View style={styles.button}>
-            <ButtonWithoutIcon title="Adicionar despesa" />
+            <ButtonWithoutIcon handleFunction={handleCreateSpending} title="Adicionar despesa" />
           </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback> 

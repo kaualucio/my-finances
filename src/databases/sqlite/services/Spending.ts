@@ -1,19 +1,21 @@
 import { db } from './../';
 import uuid from 'react-native-uuid';
 
-interface Wallet {
+interface Spending {
   name: string,
-  description?: string
+  walletId: string,
+  value: string,
+  description?: string,
 }
 
 
-function create(data: Wallet): Promise<boolean | Error> {
+function create(data: Spending): Promise<boolean | Error> {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(`
-        INSERT INTO wallets (id, name, description, created_at, updated_at) values(?, ?, ?, ?, ?)
+        INSERT INTO spendings (id, name, walletId, value, type, description, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?, ?)
       `, 
-        [String(uuid.v4()), data.name, data.description, Date.now(), Date.now()],
+        [String(uuid.v4()), data.name, data.walletId, data.value, 'spending', data.description, Date.now(), Date.now()],
         (txObj, resultSet) => {
           resolve(true)
         },
@@ -28,7 +30,7 @@ function create(data: Wallet): Promise<boolean | Error> {
 function findAll() {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
-      tx.executeSql(`SELECT * FROM wallets ORDER BY created_at ASC`, 
+      tx.executeSql(`SELECT * FROM spendings ORDER BY created_at DESC`, 
         [],
         (txObj, resultSet) => {
           resolve(resultSet.rows._array)
@@ -41,10 +43,27 @@ function findAll() {
   })
 }
 
+function findAllByWalletId(walletId: string) {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(`SELECT * FROM spendings WHERE walletId = ? ORDER BY created_at DESC`, 
+        [walletId],
+        (txObj, resultSet) => {
+          resolve(resultSet.rows._array)
+        },
+        (txObj, error): any => {
+          console.log('Error', error)
+          reject(error)
+        })
+    })
+  })
+}
+
+
 function deleteAll(): Promise<boolean | Error> {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
-      tx.executeSql(`DELETE FROM wallets`, 
+      tx.executeSql(`DELETE FROM spendings`, 
         [],
         (txObj, resultSet) => {
           resolve(true)
@@ -57,25 +76,9 @@ function deleteAll(): Promise<boolean | Error> {
   })
 }
 
-function getLastDataAddedInWallet(walletId: string) {
-  return new Promise((resolve, reject) => {
-    db.transaction(tx => {
-      tx.executeSql(`SELECT * FROM incomes WHERE walletId = ? UNION SELECT * FROM spendings WHERE walletId = ? ORDER BY created_at DESC LIMIT 3 `,
-        [walletId, walletId],
-        (txObj, resultSet) => {
-          resolve(resultSet.rows._array)
-        },
-        (txObj, error): any => {
-          console.log('Error', error)
-          reject(error)
-        })
-    })
-  })
-}
-
 export default {
   create,
   findAll,
+  findAllByWalletId,
   deleteAll,
-  getLastDataAddedInWallet,
 }
