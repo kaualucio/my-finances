@@ -9,20 +9,23 @@ import { ButtonWithoutIcon } from '../../components/ButtonWithoutIcon'
 import { THEME } from '../../global/styles/theme'
 import { useWallet } from '../../context/WalletsContext'
 import Spending from '../../databases/sqlite/services/Spending'
-import { useSpending } from '../../context/SpendingContext'
 import { formatPriceValue } from '../../utils/formatPriceValue'
 
 export default function NewSpending() {
-  const { allMyWallets, handleRefetchHistory } = useWallet()
-  const { handleRefetchDataSpending } = useSpending()
-
+  const { allMyWallets, handleRefetchHistory, currentWallet } = useWallet()
+  const [isLoading, setIsLoading] = useState(false)
   const [selectedWallet, setSelectedWallet] = useState('Selecione a carteira')
   const [name, setName] = useState('')
   const [value, setValue] = useState('')
   const [description, setDescription] = useState('')
-   
+
   async function handleCreateSpending() {
     try {
+      setIsLoading(true)
+      if(!currentWallet) {
+        return Alert.alert('Erro', 'Crie uma carteira para poder inserir dados')
+      }
+
       let selectedWalletId = handleSelectWalletByName(selectedWallet)
       
       if(!name || !value) {
@@ -35,7 +38,6 @@ export default function NewSpending() {
 
 
       await Spending.create({name, value: formatPriceValue(value), walletId: selectedWalletId,  description})
-      handleRefetchDataSpending()
       handleRefetchHistory()
       setName('')
       setSelectedWallet('Selecione a carteira')
@@ -101,9 +103,7 @@ export default function NewSpending() {
             <FormLabel label="Descrição" />
             <Input value={description} onChangeText={value => setDescription(value)} textArea multiline keyboardType="default" />
           </View>
-          <View style={styles.button}>
-            <ButtonWithoutIcon handleFunction={handleCreateSpending} title="Adicionar despesa" />
-          </View>
+            <ButtonWithoutIcon isLoading={isLoading} handleFunction={handleCreateSpending} title="Adicionar despesa" />
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback> 
     </View>

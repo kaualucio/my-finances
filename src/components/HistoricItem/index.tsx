@@ -7,6 +7,9 @@ import { Income } from '../../context/IncomeContext'
 import { Spending } from '../../context/SpendingContext'
 import moment from 'moment'
 import { formatPriceValue } from '../../utils/formatPriceValue'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import Wallet from '../../databases/sqlite/services/Wallet'
+import { useWallet } from '../../context/WalletsContext'
 
 
 interface HistoricItemProps {
@@ -14,10 +17,14 @@ interface HistoricItemProps {
 }
 
 export function HistoricItem({item}: HistoricItemProps) {
-  
+  const { handleDeleteItem } = useWallet()
 
   return (
-    <View style={styles.container}>
+    <TouchableOpacity
+      delayLongPress={600}
+      onLongPress={() => handleDeleteItem(item.type, item.id)}
+      activeOpacity={0.8} 
+      style={styles.container}>
       <View style={{flexDirection: "row", alignItems: 'center'}}>
         <Diamond size={18} weight="fill" color={item.type === 'income' ? THEME.colors.secondary.blue : THEME.colors.secondary.yellow } />
         <View style={{marginLeft: 20}}>
@@ -28,6 +35,6 @@ export function HistoricItem({item}: HistoricItemProps) {
       <View>
         <Text style={styles.value}>R${formatPriceValue(String(item.value)).replace('.', ',')}</Text>
       </View>
-    </View>
+    </TouchableOpacity>
   )
 }

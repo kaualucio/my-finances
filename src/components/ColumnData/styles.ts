@@ -4,7 +4,7 @@ import { StyleSheet } from "react-native";
 export const styles = StyleSheet.create({
   column: {
     width: 47,
-    maxHeight: 230,
+    maxHeight: 180,
     borderRadius: 4,
     position: 'relative'
   },

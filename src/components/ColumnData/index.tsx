@@ -9,9 +9,10 @@ interface ColumnDataProps {
 }
 
 export function ColumnData({value, type}: ColumnDataProps) {
+  
   return (
     <View style={[styles.column, {height: value / 200  * 10, backgroundColor: type === 'Receita' ? THEME.colors.secondary.blue : THEME.colors.secondary.yellow}]}>
-      <Text style={styles.value}>R${value}</Text>
+      <Text style={styles.value}>R${value.toFixed(0)}</Text>
     </View>
   )
 }

@@ -27,5 +27,15 @@ export const styles = StyleSheet.create({
     textTransform: "uppercase",
     fontSize: 15,
     color: THEME.colors.white
+  },
+
+  titleSection: {
+    flexDirection: "row",
+    alignItems: "center"
+  },
+  warningText: {
+    color: THEME.colors.gray[500],
+    fontSize: 11,
+    marginLeft: 5
   }
 })

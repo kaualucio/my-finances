@@ -3,13 +3,20 @@ import { Modalize } from 'react-native-modalize';
 import { ButtonWithIcon } from '../ButtonWithIcon';
 import { Wallet } from 'phosphor-react-native';
 import { THEME } from '../../global/styles/theme';
-import { Wallet as WalletInterface } from '../../context/WalletsContext';
+import { useWallet, Wallet as WalletInterface } from '../../context/WalletsContext';
 
 interface ModalWalletsProps {
   wallets: WalletInterface[]
 }
 
 export const ModalWallets = forwardRef(({wallets}: ModalWalletsProps, ref: any) => {
+  const { handleChangeCurrentWallet } = useWallet()
+
+  function handleChangeWallet(walletId: string) {
+    handleChangeCurrentWallet(walletId)
+
+  }
+
   return (
       <Modalize 
       ref={ref}
@@ -23,7 +30,7 @@ export const ModalWallets = forwardRef(({wallets}: ModalWalletsProps, ref: any) 
     >
       {
         wallets?.map(wallet => (
-          <ButtonWithIcon key={wallet.id} icon={<Wallet size={28} color={THEME.colors.white} />} title={wallet.name} />
+          <ButtonWithIcon onPress={() => handleChangeWallet(wallet.id)} key={wallet.id} icon={<Wallet size={28} color={THEME.colors.white} />} title={wallet.name} />
         ))
       }
     </Modalize>

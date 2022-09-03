@@ -12,12 +12,11 @@ import { useWallet } from '../../context/WalletsContext'
 
 import { THEME } from '../../global/styles/theme'
 import { styles } from './styles'
-import { useIncome } from '../../context/IncomeContext'
+
 import { formatPriceValue } from '../../utils/formatPriceValue'
 
 export default function NewIncome() {
-  const { allMyWallets, handleRefetchHistory } = useWallet()
-  const { handleRefetchDataIncome } = useIncome()
+  const { allMyWallets, handleRefetchHistory, currentWallet } = useWallet()
   const [selectedWallet, setSelectedWallet] = useState('Selecione a carteira')
   const [name, setName] = useState('')
   const [value, setValue] = useState('')
@@ -27,6 +26,11 @@ export default function NewIncome() {
   async function handleCreateIncome() {
     try {
       setIsLoading(true)
+
+      if(!currentWallet) {
+        return Alert.alert('Erro', 'Crie uma carteira para poder inserir dados')
+      }
+
       let selectedWalletId = handleSelectWalletByName(selectedWallet)
       
       if(!name || !value) {
@@ -38,7 +42,7 @@ export default function NewIncome() {
       }
 
       await Income.create({name, value: formatPriceValue(value), walletId: selectedWalletId,  description})
-      handleRefetchDataIncome()
+      // handleRefetchDataIncome()
       handleRefetchHistory()
       setName('')
       setSelectedWallet('Selecione a carteira')
@@ -47,6 +51,7 @@ export default function NewIncome() {
       Alert.alert('Sucesso!', 'Sua receita foi adicionada com sucesso com sucesso!')
      
     } catch (error) {
+      console.log(error)
       Alert.alert('Algo deu errado :(', 'Ocorreu um erro ao criar sua carteira, tente novamente')
     } finally {
       setIsLoading(false)

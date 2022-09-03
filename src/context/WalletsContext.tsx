@@ -1,4 +1,5 @@
-import React from 'react'
+import moment from 'moment';
+import React, { useMemo } from 'react'
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import Wallet from "../databases/sqlite/services/Wallet";
 import { Income, useIncome } from './IncomeContext';
@@ -12,32 +13,43 @@ export interface Wallet {
 }
 
 interface WalletsContextProps {
+  totalBudget: any,
   isLoading: boolean,
+  refetchHistory: boolean,
+  isLoadingChangeWalletData: boolean,
   currentWallet: Wallet,
   allMyWallets: Wallet[],
+  allWalletHistory: Spending[] | Income[],
   lastActivityInCurrentWallet: Spending[] | Income[],
   handleRefetchData: () => void,
   handleRefetchHistory: () => void,
+  handleRefetchDataWallet: (value: boolean) => void,
+  handleSortDataStatistics: () => any,
+  handleDeleteItem: (itemType: string, itemId: string) => void,
   handleChangeCurrentWallet: (walletId: string) => void
 }
 
 const WalletsContext = createContext({} as WalletsContextProps)
 
 function WalletContextProvider({children}: PropsWithChildren) {
+  const [isLoadingChangeWalletData, setIsLoadingChangeWalletData] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
   const [refetchHistory, setRefetchHistory] = useState(true)
   const [currentWallet, setCurrentWallet] = useState<Wallet | null>(null)
   const [allMyWallets, setAllMyWallets] = useState<Wallet[]>([])
+  const [allWalletHistory, setAllWalletHistory] = useState<Spending[] | Income[]>([])
   const [lastActivityInCurrentWallet, setLastActivityInCurrentWallet] = useState<Spending[] | Income[]>([])
+  const totalBudget = useMemo(() => handleGetTotalBudgetBalance(), [allWalletHistory])
 
   function handleChangeCurrentWallet(walletId: string) {
     let newCurrentWallet = allMyWallets.find(wallet => wallet.id === walletId)
     setCurrentWallet(newCurrentWallet)
     setRefetchHistory(true)
+    handleRefetchDataWallet(true)
   }
 
   useEffect(() => {
-    if(isLoading) {
+    if(isLoading && !currentWallet) {
       Wallet.findAll()
       .then(data => {
         setCurrentWallet(data[0])
@@ -51,21 +63,20 @@ function WalletContextProvider({children}: PropsWithChildren) {
   useEffect(() => { 
     if(currentWallet && refetchHistory) {
       Wallet.getLastDataAddedInWallet(currentWallet.id)
-      .then(data => {
-        setLastActivityInCurrentWallet(data as Spending[] | Income[])
+      .then((data: Spending[] | Income[]) => {
+        setAllWalletHistory(data)
+        setLastActivityInCurrentWallet(data.slice(0, 3))
         setRefetchHistory(false)
       })
     }
   }, [currentWallet, refetchHistory])
 
-  // useEffect(() => {
-  //     Wallet.deleteAll()
-  //     .then(data => {
-        
-  //     })
-  //     .catch(error => console.log(error))
-  //     .finally(() => setIsLoading(false))
-  // }, [])
+  function handleRefetchDataWallet(value: boolean) {
+    setIsLoadingChangeWalletData(value)
+    setTimeout(() => {
+      setIsLoadingChangeWalletData(false)
+    }, 500)
+  }
 
   function handleRefetchData() {
     setIsLoading(true)
@@ -75,15 +86,66 @@ function WalletContextProvider({children}: PropsWithChildren) {
     setRefetchHistory(true)
   }
 
+  function handleSortDataStatistics() {
+    let sortedData = {
+      incomes: [],
+      spendings: []
+    }
+
+    allWalletHistory.map(data => {
+      if(data.type === 'income') {
+        sortedData['incomes'].push({ value: data.value, date: moment(data.created_at).format("MMM")})
+      }else if(data.type === 'spending') {
+        sortedData['spendings'].push({ value: data.value, date: moment(data.created_at).format("MMM") })
+      }
+    })
+
+    return sortedData
+  }
+
+  function handleGetTotalBudgetBalance() {
+    let totalBudgetData = {
+      totalIncomeValue: 0,
+      totalSpendingValue: 0
+    }
+
+    allWalletHistory.map(data => {
+      if(data.type === 'income') {
+        totalBudgetData['totalIncomeValue'] += data.value
+      }else if(data.type === 'spending') {
+        totalBudgetData['totalSpendingValue'] += data.value
+      }
+    })
+
+    return totalBudgetData
+  }
+
+  async function handleDeleteItem(itemType: string, itemId: string) {
+    try {
+      let table = itemType === 'income' ? 'incomes' :'spendings'
+      await Wallet.deleteItemFromWallet(table, itemId)
+      handleRefetchHistory()
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   return (
     <WalletsContext.Provider value={{
+      totalBudget,
       isLoading,
+      refetchHistory,
+      isLoadingChangeWalletData,
       allMyWallets,
       currentWallet,
+      allWalletHistory,
       lastActivityInCurrentWallet,
       handleRefetchData,
       handleRefetchHistory,
-      handleChangeCurrentWallet
+      handleRefetchDataWallet,
+      handleSortDataStatistics,
+      handleDeleteItem,
+      handleChangeCurrentWallet,
     }}>
       {children}
     </WalletsContext.Provider>

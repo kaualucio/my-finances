@@ -14,9 +14,15 @@ import { db } from './src/databases/sqlite';
 import { WalletContextProvider } from './src/context/WalletsContext';
 import { IncomeContextProvider } from './src/context/IncomeContext';
 import { SpendingContextProvider } from './src/context/SpendingContext';
+import moment from 'moment';
 
 SplashScreen.preventAutoHideAsync()
-
+moment.updateLocale('br', {
+  monthsShort : [
+      "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+      "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+  ]
+});
 function App() {
   const [fontsLoaded] = useFonts({
     Poppins_200ExtraLight, Poppins_300Light, Poppins_400Regular, Poppins_500Medium, Poppins_700Bold 
@@ -92,11 +98,11 @@ function App() {
         backgroundColor={THEME.colors.white} 
       />
       <WalletContextProvider>
-        <IncomeContextProvider>
-          <SpendingContextProvider>
+        {/* <IncomeContextProvider> */}
+          {/* <SpendingContextProvider> */}
             <Routes />
-          </SpendingContextProvider>
-        </IncomeContextProvider>
+          {/* </SpendingContextProvider> */}
+        {/* </IncomeContextProvider> */}
       </WalletContextProvider>
     </GestureHandlerRootView>
   );
