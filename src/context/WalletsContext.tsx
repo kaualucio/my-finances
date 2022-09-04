@@ -2,8 +2,17 @@ import moment from 'moment';
 import React, { useMemo } from 'react'
 import { createContext, PropsWithChildren, useContext, useEffect, useState } from "react";
 import Wallet from "../databases/sqlite/services/Wallet";
-import { Income, useIncome } from './IncomeContext';
-import { Spending, useSpending } from './SpendingContext';
+
+export interface TypeBudget {
+  id: string,
+  name: string,
+  walletId: string,
+  value: number,
+  type: 'income' | 'spending',
+  description: string,
+  created_at: number,
+  updated_at: number,
+}
 
 export interface Wallet {
   id: string,
@@ -19,8 +28,8 @@ interface WalletsContextProps {
   isLoadingChangeWalletData: boolean,
   currentWallet: Wallet,
   allMyWallets: Wallet[],
-  allWalletHistory: Spending[] | Income[],
-  lastActivityInCurrentWallet: Spending[] | Income[],
+  allWalletHistory: TypeBudget[],
+  lastActivityInCurrentWallet: TypeBudget[],
   handleRefetchData: () => void,
   handleRefetchHistory: () => void,
   handleRefetchDataWallet: (value: boolean) => void,
@@ -37,8 +46,8 @@ function WalletContextProvider({children}: PropsWithChildren) {
   const [refetchHistory, setRefetchHistory] = useState(true)
   const [currentWallet, setCurrentWallet] = useState<Wallet | null>(null)
   const [allMyWallets, setAllMyWallets] = useState<Wallet[]>([])
-  const [allWalletHistory, setAllWalletHistory] = useState<Spending[] | Income[]>([])
-  const [lastActivityInCurrentWallet, setLastActivityInCurrentWallet] = useState<Spending[] | Income[]>([])
+  const [allWalletHistory, setAllWalletHistory] = useState<TypeBudget[]>([])
+  const [lastActivityInCurrentWallet, setLastActivityInCurrentWallet] = useState<TypeBudget[]>([])
   const totalBudget = useMemo(() => handleGetTotalBudgetBalance(), [allWalletHistory])
 
   function handleChangeCurrentWallet(walletId: string) {
@@ -49,7 +58,7 @@ function WalletContextProvider({children}: PropsWithChildren) {
   }
 
   useEffect(() => {
-    if(isLoading && !currentWallet) {
+    if(isLoading && !currentWallet || isLoading && currentWallet) {
       Wallet.findAll()
       .then(data => {
         setCurrentWallet(data[0])
@@ -63,7 +72,7 @@ function WalletContextProvider({children}: PropsWithChildren) {
   useEffect(() => { 
     if(currentWallet && refetchHistory) {
       Wallet.getLastDataAddedInWallet(currentWallet.id)
-      .then((data: Spending[] | Income[]) => {
+      .then((data: TypeBudget[]) => {
         setAllWalletHistory(data)
         setLastActivityInCurrentWallet(data.slice(0, 3))
         setRefetchHistory(false)

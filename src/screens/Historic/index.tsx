@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
+import { View, Text, TouchableOpacity } from 'react-native'
+import Animated, { FadeInUp, SlideInRight, SlideOutLeft } from 'react-native-reanimated'
 import { HeaderNavigation } from '../../components/HeaderNavigation'
 import { HistoricItem } from '../../components/HistoricItem'
 import { TitleSection } from '../../components/TitleSection'
@@ -55,22 +56,30 @@ export default function Historic() {
         </View>
         {
           historic.length > 0 ? (
-            <ScrollView
+            <Animated.ScrollView
+              entering={FadeInUp}
               style={{marginTop: 20}}
               showsVerticalScrollIndicator={false}
               contentContainerStyle={{
                 paddingBottom: 20
               }}
+             
             >
               {
                   historic.map(item => (
                     <HistoricItem key={item.id} item={item} />
                   ))
                 }
-            </ScrollView>
+            </Animated.ScrollView>
           )
           : (
-            <Text style={{marginTop: 20, textAlign: 'center', fontSize: 13, color: THEME.colors.gray[500]}}>Oops! Parece que você ainda não dados na sua carteira!</Text>
+            <Animated.Text
+              entering={SlideInRight} 
+              exiting={SlideOutLeft} 
+              style={{marginTop: 20, textAlign: 'center', fontSize: 13, color: THEME.colors.gray[500]}}
+            >
+                Oops! Parece que você ainda não dados na sua carteira!
+            </Animated.Text>
           )
         }
         

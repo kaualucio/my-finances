@@ -4,7 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { Poppins_200ExtraLight, Poppins_300Light, Poppins_400Regular, Poppins_500Medium, Poppins_700Bold } from '@expo-google-fonts/poppins'
 
 import { THEME } from './src/global/styles/theme';
@@ -12,9 +12,8 @@ import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Routes } from './src/routes';
 import { db } from './src/databases/sqlite';
 import { WalletContextProvider } from './src/context/WalletsContext';
-import { IncomeContextProvider } from './src/context/IncomeContext';
-import { SpendingContextProvider } from './src/context/SpendingContext';
 import moment from 'moment';
+import { Host } from 'react-native-portalize';
 
 SplashScreen.preventAutoHideAsync()
 moment.updateLocale('br', {
@@ -93,18 +92,16 @@ function App() {
 
   return (
     <GestureHandlerRootView style={styles.container} onLayout={onLayoutRootView}>
-      <StatusBar 
-        style="auto" 
-        backgroundColor={THEME.colors.white} 
-      />
-      <WalletContextProvider>
-        {/* <IncomeContextProvider> */}
-          {/* <SpendingContextProvider> */}
-            <Routes />
-          {/* </SpendingContextProvider> */}
-        {/* </IncomeContextProvider> */}
-      </WalletContextProvider>
-    </GestureHandlerRootView>
+        <StatusBar 
+          style="auto" 
+          backgroundColor={THEME.colors.white} 
+          />
+          <Host>
+        <WalletContextProvider>
+              <Routes />
+        </WalletContextProvider>
+      </Host>
+      </GestureHandlerRootView>
   );
 }
 

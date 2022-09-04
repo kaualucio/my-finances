@@ -3,6 +3,7 @@ import { CalendarBlank, ListDashes, Wallet } from 'phosphor-react-native';
 import React, { useEffect, useRef } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Modalize } from 'react-native-modalize';
+import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
 import { Balance } from '../../components/Balance';
 import { CalendarStatistics } from '../../components/CalendarStatistics';
 import { Header } from '../../components/Header';
@@ -44,82 +45,93 @@ function HomeScreen() {
       modalRef2.current.close()
     }
   }, [isLoadingChangeWalletData])
-  
 
 
   if(isLoading) return <Spinner />
 
   return (
-    <View  style={styles.container}>
-      <Header openModal={openModal} />
-      <ModalMenu handleGoToScreen={handleGoToScreen} ref={modalRef} />
-      <ModalWallets wallets={allMyWallets} ref={modalRef2} /> 
-      {
+    
+      <View 
+        style={styles.container}
+      >
+        <Header openModal={openModal} />
+        <ModalWallets wallets={allMyWallets} ref={modalRef2} /> 
+        <ModalMenu handleGoToScreen={handleGoToScreen} ref={modalRef} />
+        {
 
-        isLoadingChangeWalletData 
-        ? <Spinner />
-        : allMyWallets.length > 0
-        ? (
-          <>
-            <ScrollView
-              style={{paddingHorizontal: 20,}}
-              contentContainerStyle={{
-                paddingVertical: 30
-              }}
-              showsVerticalScrollIndicator={false}
-              >
-                <View style={styles.headerSection}>
-                  <TitleSection icon={<Wallet size={24} color={THEME.colors.black} weight="bold" />} title={currentWallet?.name} />
-                  <TouchableOpacity onPress={openModal2}>
-                    <Text style={styles.linkSection}>Trocar Carteira</Text>
-                  </TouchableOpacity>
-                
-                </View>
-              <View style={styles.balance}>
-                <Balance title="Receita" value={totalBudget.totalIncomeValue} />
-                <Balance title="Despesa" value={totalBudget.totalSpendingValue} />
-              </View>
-              <View style={styles.section}>
-                <View style={styles.headerSection}>
-                  <TitleSection icon={<CalendarBlank size={24} color={THEME.colors.black} weight="bold" />} title="Dados Mensais" />
-                  {/* <TouchableOpacity>
-                    <Text style={styles.linkSection}>Ver Todos</Text>
-                  </TouchableOpacity> */}
-                </View>
-                <ScrollView  
-                  horizontal
-                  showsHorizontalScrollIndicator={false}
+          isLoadingChangeWalletData 
+          ? <Spinner />
+          : allMyWallets.length > 0
+          ? (
+            <Animated.View
+              style={{flex: 1}}
+              entering={FadeInUp.duration(100)}
+              exiting={FadeOutDown.duration(100)}
+            >
+              <ScrollView
+                style={{paddingHorizontal: 20,}}
+                contentContainerStyle={{
+                  paddingVertical: 30
+                }}
+                showsVerticalScrollIndicator={false}
                 >
-                  {
-                    months.map((item) => (
-                      <CalendarStatistics key={item} month={item} />
-                    ))
-                  }
-                </ScrollView>
-              </View>
-              <View style={styles.section}>
-                <View style={styles.headerSection}>
-                  <TitleSection icon={<ListDashes size={24} color={THEME.colors.black} weight="bold" />} title="Histórico" />
-                  <TouchableOpacity onPress={() => handleGoToScreen('Historic')}>
-                    <Text style={styles.linkSection}>Ver Todos</Text>
-                  </TouchableOpacity>
+                  <View style={styles.headerSection}>
+                    <TitleSection icon={<Wallet size={24} color={THEME.colors.black} weight="bold" />} title={currentWallet?.name} />
+                    <TouchableOpacity onPress={openModal2}>
+                      <Text style={styles.linkSection}>Trocar Carteira</Text>
+                    </TouchableOpacity>
+                  
+                  </View>
+                <Animated.View 
+                  entering={SlideInRight.delay(130)}
+                  exiting={SlideOutLeft.duration(100)}
+                  style={styles.balance}>
+                  <Balance title="Receita" value={totalBudget.totalIncomeValue} />
+                  <Balance title="Despesa" value={totalBudget.totalSpendingValue} />
+                </Animated.View>
+                <View style={styles.section}>
+                  <View style={styles.headerSection}>
+                    <TitleSection icon={<CalendarBlank size={24} color={THEME.colors.black} weight="bold" />} title="Dados Mensais" />
+                    {/* <TouchableOpacity>
+                      <Text style={styles.linkSection}>Ver Todos</Text>
+                    </TouchableOpacity> */}
+                  </View>
+                  <ScrollView  
+                    
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                  >
+                    {
+                      months.map((item) => (
+                        <CalendarStatistics key={item} month={item} />
+                      ))
+                    }
+                  </ScrollView>
                 </View>
-                <View>
-                  {
-                    lastActivityInCurrentWallet.map(item => (
-                      <HistoricItem key={item.id} item={item} />
-                    ))
-                  }
+                <View style={styles.section}>
+                  <View style={styles.headerSection}>
+                    <TitleSection icon={<ListDashes size={24} color={THEME.colors.black} weight="bold" />} title="Histórico" />
+                    <TouchableOpacity onPress={() => handleGoToScreen('Historic')}>
+                      <Text style={styles.linkSection}>Ver Todos</Text>
+                    </TouchableOpacity>
+                  </View>
+                  <View style={{zIndex: 0}}>
+                    {
+                      lastActivityInCurrentWallet.map(item => (
+                        <HistoricItem key={item.id} item={item} />
+                      ))
+                    }
+                  </View>
                 </View>
-              </View>
-            </ScrollView>
-          </>
-        )
-        : (
-          <Text style={{marginTop: 20, textAlign: 'center', fontSize: 13, color: THEME.colors.gray[500]}}>Oops! Parece que você ainda não possui uma carteira!</Text>
-        )
-      }
-    </View>
+              </ScrollView>
+            </Animated.View>
+          )
+          : (
+            <Text style={{marginTop: 20, textAlign: 'center', fontSize: 13, color: THEME.colors.gray[500]}}>Oops! Parece que você ainda não possui uma carteira!</Text>
+          )
+        }
+      </View>
+
   );
 }
 
