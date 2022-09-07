@@ -1,11 +1,14 @@
+import { Wallet } from "../context/WalletsContext";
+
 export declare global {
   namespace ReactNavigation {
     interface RootParamList {
       Home: undefined,
       Historic: undefined,
       NewWallet: undefined,
-      NewIncome: undefined
-      NewSpending: undefined
+      EditWallet: any,
+      NewData: undefined,
+      AllMyWallets: undefined
     }
   }
 }

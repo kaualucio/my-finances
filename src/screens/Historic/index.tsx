@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import Animated, { FadeInUp, SlideInRight, SlideOutLeft } from 'react-native-reanimated'
@@ -26,7 +27,7 @@ export default function Historic() {
 
   return (
     <View style={styles.container}>
-      <HeaderNavigation title="Histórico" />
+      <HeaderNavigation title={`Histórico (${historic.length})`} />
       <View style={{ flex: 1, paddingHorizontal: 20}}>
         <View style={styles.filter}>
           <TouchableOpacity 

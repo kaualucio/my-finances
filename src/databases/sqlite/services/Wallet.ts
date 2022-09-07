@@ -3,7 +3,9 @@ import uuid from 'react-native-uuid';
 
 interface Wallet {
   name: string,
-  description?: string
+  minIncome?: string,
+  maxSpend?: string,
+  description?: string,
 }
 
 
@@ -41,6 +43,22 @@ function findAll() {
   })
 }
 
+function update(data: Wallet, id: string) {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(`UPDATE wallets SET name = ?, minIncome = ?, maxSpend = ?, description = ? WHERE id = ?`, 
+        [data.name, data.minIncome, data.maxSpend, data.description, id],
+        (txObj, resultSet) => {
+          resolve(true)
+        },
+        (txObj, error): any => {
+          console.log('Error', error)
+          reject(error)
+        })
+    })
+  })
+}
+
 function deleteAll(): Promise<boolean | Error> {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
@@ -51,6 +69,21 @@ function deleteAll(): Promise<boolean | Error> {
         },
         (txObj, error): any => {
           console.log('Error', error)
+          reject(error)
+        })
+    })
+  })
+}
+
+function deleteById(id: string): Promise<boolean | Error> {
+  return new Promise((resolve, reject) => {
+    db.transaction(tx => {
+      tx.executeSql(`DELETE FROM wallets WHERE id = ?`, 
+        [id],
+        (txObj, resultSet) => {
+          resolve(true)
+        },
+        (txObj, error): any => {
           reject(error)
         })
     })
@@ -73,7 +106,7 @@ function deleteItemFromWallet(table: string, itemId: string): Promise<boolean | 
   })
 }
 
-function getLastDataAddedInWallet(walletId: string) {
+function getLastDataAddedInWallet(walletId: string): Promise<any[]> {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(`SELECT * FROM incomes WHERE walletId = ? UNION SELECT * FROM spendings WHERE walletId = ? ORDER BY created_at DESC `,
@@ -92,7 +125,9 @@ function getLastDataAddedInWallet(walletId: string) {
 export default {
   create,
   findAll,
+  update,
   deleteAll,
+  deleteById,
   deleteItemFromWallet,
   getLastDataAddedInWallet,
 }

@@ -1,4 +1,4 @@
-import { THEME } from './../../global/styles/theme';
+import { THEME } from '../../global/styles/theme';
 import { StyleSheet } from "react-native";
 
 export const styles = StyleSheet.create({
@@ -8,6 +8,7 @@ export const styles = StyleSheet.create({
   },
   
   form: {
+    justifyContent: "space-evenly",
     flex: 1,
     paddingHorizontal: 20,
   },

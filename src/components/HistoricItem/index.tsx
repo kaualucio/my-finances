@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, Alert } from 'react-native'
 import React from 'react'
 import { styles } from './styles'
 import { THEME } from '../../global/styles/theme'
@@ -16,6 +16,20 @@ interface HistoricItemProps {
 export function HistoricItem({item}: HistoricItemProps) {
   const { handleDeleteItem } = useWallet()
 
+  function openConfirmDeleteDialog(itemType: string, itemId: string) {
+    Alert.alert('Tem certeza', 'Tem certeza que deseja deletar esse item?', [
+      {
+        text: "Sim", 
+        onPress: () => {
+          handleDeleteItem(itemType, itemId)
+        },
+      },
+      {
+        text: "Não",
+      }
+    ])
+  }
+
   return (
     <Animated.View 
       entering={SlideInRight.delay(130)}
@@ -24,7 +38,7 @@ export function HistoricItem({item}: HistoricItemProps) {
     >
      <TouchableOpacity
       delayLongPress={600}
-      onLongPress={() => handleDeleteItem(item.type, item.id)}
+      onLongPress={() => openConfirmDeleteDialog(item.type, item.id)}
       activeOpacity={0.8} 
       style={styles.container}>
       <View style={{flexDirection: "row", alignItems: 'center'}}>

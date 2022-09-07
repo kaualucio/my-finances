@@ -1,15 +1,17 @@
 import { useNavigation } from '@react-navigation/native'
-import { ArrowLeft } from 'phosphor-react-native'
-import React from 'react'
+import { ArrowLeft, IconProps } from 'phosphor-react-native'
+import React, { ReactElement } from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
-import { THEME } from '../../global/styles/theme'
 import { styles } from './styles'
 
 interface HeaderNavigationProps {
-  title: string
+  title: string,
+  handleFunction?: any,
+  isLoading?: boolean,
+  icon?: ReactElement<IconProps>,
 }
 
-export function HeaderNavigation({title}: HeaderNavigationProps) {
+export function HeaderNavigation({title, handleFunction, isLoading, icon}: HeaderNavigationProps) {
   const navigation = useNavigation()
 
   function handleGoBack() {
@@ -18,11 +20,20 @@ export function HeaderNavigation({title}: HeaderNavigationProps) {
   
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={handleGoBack} style={styles.button}>
+      <TouchableOpacity activeOpacity={0.8} onPress={handleGoBack} style={[styles.button, { opacity: isLoading ? 0.8 : 1 }]}>
         <ArrowLeft size={28} color="white"  />
       </TouchableOpacity>
       <Text style={styles.title}>{title}</Text>
-      <View style={styles.viewEmpty} />
+      {
+        icon 
+        ? (
+          <TouchableOpacity activeOpacity={0.8} disabled={isLoading} onPress={handleFunction} style={styles.button}>
+            {icon}
+          </TouchableOpacity>
+        )
+        : <View style={styles.viewEmpty} />
+      }
+      
     </View>
   )
 }

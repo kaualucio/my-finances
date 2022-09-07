@@ -28,14 +28,17 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: THEME.colors.white
   },
-
   titleSection: {
     flexDirection: "row",
     alignItems: "center"
   },
   warningText: {
     color: THEME.colors.gray[500],
-    fontSize: 11,
-    marginLeft: 5
+    fontSize: 10,
+    marginLeft: 5,
+  },
+  totalText: {
+    color: THEME.colors.gray[500],
+    fontSize: 13,
   }
 })
