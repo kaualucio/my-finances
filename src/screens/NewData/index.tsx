@@ -80,6 +80,7 @@ export default function NewData() {
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios'? 'padding': 'height'}
+          keyboardVerticalOffset={10}
           style={styles.form}
         >
       <ScrollView
@@ -91,7 +92,7 @@ export default function NewData() {
         directionalLockEnabled={false}
       >
           <View style={styles.formField}>
-            <FormLabel label="Título da receita*" />
+            <FormLabel label="Título*" />
             <Input keyboardType="default" value={data.name} onChangeText={value => setData(prevState => ({...prevState, name: value}))} />
           </View>
           <View style={styles.formField}>

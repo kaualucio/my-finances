@@ -4,11 +4,12 @@ import { HeaderNavigation } from '../../components/HeaderNavigation'
 import { Input } from '../../components/Input'
 import { FormLabel } from '../../components/FormLabel'
 import { styles } from './styles'
-import { ButtonWithoutIcon } from '../../components/ButtonWithoutIcon'
 import Wallet from '../../databases/sqlite/services/Wallet'
 import { useWallet } from '../../context/WalletsContext'
 import { useRoute } from '@react-navigation/native'
 import { CheckCircle } from 'phosphor-react-native'
+
+
 export default function EditWallet() {
   const { handleRefetchData } = useWallet()
   const { params } = useRoute()
@@ -29,6 +30,8 @@ export default function EditWallet() {
       Alert.alert('Sucesso!', 'Sua carteira foi editada com sucesso!')
     } catch (error) {
       Alert.alert('Algo deu errado :(!', 'Ocorreu um erro ao editar sua carteira, tente novamente')
+    }finally {
+      setIsLoading(false)
     }
    
   }
@@ -56,9 +59,6 @@ export default function EditWallet() {
             <FormLabel label="Descrição da carteira" />
             <Input textArea multiline keyboardType="default" value={walletData.description} onChangeText={(value) => setWalletData(prevState => ({...prevState, description: value}))} />
           </View>
-          {/* <View style={styles.button}>
-            <ButtonWithoutIcon onPress={handleEditWallet} title="Criar carteira" />
-          </View> */}
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback> 
     </View>

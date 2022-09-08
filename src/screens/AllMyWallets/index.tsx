@@ -43,8 +43,10 @@ export default function AllMyWallets() {
   }
 
   useEffect(() => {
-    setListWalletInformation(getMonetaryWalletInformation())
-  }, [])
+    if(allMyWallets.length > 0) {
+      setListWalletInformation(getMonetaryWalletInformation())
+    }
+  }, [allMyWallets])
 
 
   async function handleDelete(walletId: string) {
@@ -128,21 +130,21 @@ export default function AllMyWallets() {
                           <View style={[styles.dataInfoContainer, {marginBottom: 20}]}>
                             <View>
                                 <Text style={styles.dataInfoTitle}>Receita Atual:</Text>
-                                <Text style={styles.dataInfoText}>R${formatPriceValue(String(listWalletInformation.find(wallet => wallet.id === item.id).totalIncome)).replace('.', ',')}</Text>
+                                <Text style={styles.dataInfoText}>R${listWalletInformation.length > 0 ? formatPriceValue(String(listWalletInformation?.find(wallet => wallet.id === item.id).totalIncome)).replace('.', ',') : '0,00'}</Text>
                               </View>
                               <View style={{left: -17}}>
                                 <Text style={styles.dataInfoTitle}>Despesa Atual:</Text>
-                                <Text style={styles.dataInfoText}>R${formatPriceValue(String(listWalletInformation.find(wallet => wallet.id === item.id).totalSpending)).replace('.', ',')}</Text>
+                                <Text style={styles.dataInfoText}>R${listWalletInformation.length > 0 ? formatPriceValue(String(listWalletInformation?.find(wallet => wallet.id === item.id).totalSpending)).replace('.', ',') : '0,00'}</Text>
                               </View>
                           </View>
                             <View style={styles.dataInfoContainer}>
                               <View>
                                 <Text style={styles.dataInfoTitle}>Meta de Receita:</Text>
-                                <Text style={styles.dataInfoText}>R${formatPriceValue(String(item.minIncome)).replace('.', ',')}</Text>
+                                <Text style={styles.dataInfoText}>R${item.minIncome ? formatPriceValue(String(item.minIncome)).replace('.', ',') : '0,00'}</Text>
                               </View>
                               <View>
                                 <Text style={styles.dataInfoTitle}>Despesa Máxima:</Text>
-                                <Text style={styles.dataInfoText}>R${formatPriceValue(String(item.maxSpend)).replace('.', ',')}</Text>
+                                <Text style={styles.dataInfoText}>R${item.maxSpend ? formatPriceValue(String(item.maxSpend)).replace('.', ',') : '0,00'}</Text>
                               </View>
                             </View>
                             <View style={styles.actionButtons}>

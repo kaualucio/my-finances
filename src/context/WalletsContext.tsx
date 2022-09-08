@@ -68,8 +68,8 @@ function WalletContextProvider({children}: PropsWithChildren) {
   useEffect(() => {
     if(isLoading && !currentWallet || isLoading && currentWallet) {
       Wallet.findAll()
-      .then(data => {
-        setCurrentWallet(data[0])
+      .then((data: Wallet[]) => {
+        setCurrentWallet(data.length > 0 ? data[0] : null)
         setAllMyWallets(data as Wallet[])
       })
       .catch(error => console.log(error))

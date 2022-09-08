@@ -13,9 +13,9 @@ function create(data: Wallet): Promise<boolean | Error> {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(`
-        INSERT INTO wallets (id, name, description, created_at, updated_at) values(?, ?, ?, ?, ?)
+        INSERT INTO wallets (id, name, description, minIncome, maxSpend, created_at, updated_at) values(?, ?, ?, ?, ?, ?, ?)
       `, 
-        [String(uuid.v4()), data.name, data.description, Date.now(), Date.now()],
+        [String(uuid.v4()), data.name, data.description, data.minIncome, data.maxSpend, Date.now(), Date.now()],
         (txObj, resultSet) => {
           resolve(true)
         },
@@ -27,7 +27,7 @@ function create(data: Wallet): Promise<boolean | Error> {
   })
 }
 
-function findAll() {
+function findAll(): Promise<Wallet[]> {
   return new Promise((resolve, reject) => {
     db.transaction(tx => {
       tx.executeSql(`SELECT * FROM wallets ORDER BY created_at ASC`, 
