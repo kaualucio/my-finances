@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "budget-app",
-    "slug": "budget-app",
+    "name": "My Finances",
+    "slug": "My Finances",
     "version": "1.0.0",
     "orientation": "portrait",
     "sdkVersion": "46.0.0",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1B263B"
     },
     "updates": {
       "fallbackToCacheTimeout": 0
@@ -31,5 +31,9 @@
     "web": {
       "favicon": "./assets/favicon.png"
     }
+  },
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-5973949696506873~5055751791",
+    "delay_app_measurement_init": true
   }
 }

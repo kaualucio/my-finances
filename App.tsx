@@ -14,59 +14,45 @@ import { db } from './src/databases/sqlite';
 import { WalletContextProvider } from './src/context/WalletsContext';
 import moment from 'moment';
 import { Host } from 'react-native-portalize';
+import { TestIds } from 'react-native-google-mobile-ads';
 
 SplashScreen.preventAutoHideAsync()
 moment.updateLocale('br', {
   monthsShort : [
-      "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
-      "Jul", "Ago", "Set", "Out", "Nov", "Dez"
+    "Jan", "Fev", "Mar", "Abr", "Mai", "Jun",
+    "Jul", "Ago", "Set", "Out", "Nov", "Dez"
   ]
 });
+
+
 function App() {
   const [fontsLoaded] = useFonts({
     Poppins_200ExtraLight, Poppins_300Light, Poppins_400Regular, Poppins_500Medium, Poppins_700Bold 
   });
   const [appIsReady, setAppIsReady] = useState(false);
-
   useEffect(() => {
     async function prepare() {
       try {
-       
         db.transaction((tx) => {
           tx.executeSql(
-            "CREATE TABLE IF NOT EXISTS wallets (id varchar(255) primary key not null, name varchar(255) not null, description varchar(255), created_at datetime, updated_at datetime);",
+            "CREATE TABLE IF NOT EXISTS wallets (id varchar(255) primary key not null, name varchar(255) not null, minIncome varchar(255), maxSpend varchar(255), description varchar(255), created_at datetime, updated_at datetime);",
             [],
           );
         });
 
         db.transaction((tx) => {
           tx.executeSql(
-            "CREATE TABLE IF NOT EXISTS incomes (id varchar(255) primary key not null, name varchar(255) not null, walletId varchar(255) not null, value number not null, description varchar(255), created_at datetime, updated_at datetime, CONSTRAINT fk_walletId FOREIGN KEY (walletId) REFERENCES wallets (id));",
+            "CREATE TABLE IF NOT EXISTS incomes (id varchar(255) primary key not null, name varchar(255) not null, walletId varchar(255) not null, value number not null, type varchar(10), description varchar(255), created_at datetime, updated_at datetime, CONSTRAINT fk_walletId FOREIGN KEY (walletId) REFERENCES wallets (id) ON DELETE CASCADE);",
             [],
           );
         });
 
         db.transaction((tx) => {
           tx.executeSql(
-            "CREATE TABLE IF NOT EXISTS spendings (id varchar(255) primary key not null, name varchar(255) not null, walletId varchar(255) not null, value number not null, description varchar(255), created_at datetime, updated_at datetime, CONSTRAINT fk_walletId FOREIGN KEY (walletId) REFERENCES wallets (id));",
+            "CREATE TABLE IF NOT EXISTS spendings (id varchar(255) primary key not null, name varchar(255) not null, walletId varchar(255) not null, value number not null, type varchar(10), description varchar(255), created_at datetime, updated_at datetime, CONSTRAINT fk_walletId FOREIGN KEY (walletId) REFERENCES wallets (id) ON DELETE CASCADE);",
             [],
           );
         });
-
-        // db.transaction((tx) => {
-        //   tx.executeSql(
-        //     "DELETE FROM incomes",
-        //     [],
-        //   );
-        // });
-
-        // db.transaction((tx) => {
-        //   tx.executeSql(
-        //     "DELETE FROM spendings",
-        //     [],
-        //   );
-        // });
-
       } catch (e) {
         console.warn(e);
       } finally {
@@ -97,10 +83,10 @@ function App() {
           backgroundColor={THEME.colors.white} 
           />
           <Host>
-        <WalletContextProvider>
+            <WalletContextProvider>
               <Routes />
-        </WalletContextProvider>
-      </Host>
+            </WalletContextProvider>
+          </Host>
       </GestureHandlerRootView>
   );
 }

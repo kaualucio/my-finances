@@ -1,5 +1,5 @@
-import { View, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native'
-import React, { useState } from 'react'
+import { View, KeyboardAvoidingView, Keyboard, ScrollView, TouchableWithoutFeedback, Alert, Platform } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { HeaderNavigation } from '../../components/HeaderNavigation'
 import { Input } from '../../components/Input'
 import { FormLabel } from '../../components/FormLabel'
@@ -8,7 +8,9 @@ import Wallet from '../../databases/sqlite/services/Wallet'
 import { useWallet } from '../../context/WalletsContext'
 import { useRoute } from '@react-navigation/native'
 import { CheckCircle } from 'phosphor-react-native'
-
+import { AdEventType, BannerAd, BannerAdSize, InterstitialAd, TestIds } from 'react-native-google-mobile-ads'
+import {BANNER_AD_UNIT_ID} from "react-native-dotenv"
+const adUnitIdBanner = __DEV__ ? TestIds.BANNER : BANNER_AD_UNIT_ID;
 
 export default function EditWallet() {
   const { handleRefetchData } = useWallet()
@@ -36,13 +38,24 @@ export default function EditWallet() {
    
   }
 
-  
 
   return (
     <View style={styles.container}>
       <HeaderNavigation title="Editar Carteira" handleFunction={handleEditWallet} icon={<CheckCircle size={28} color={"#32bd50"} />}  isLoading={isLoading}/>
       <TouchableWithoutFeedback  onPress={Keyboard.dismiss} >
-        <KeyboardAvoidingView style={styles.form}>
+        <KeyboardAvoidingView 
+        style={styles.form}
+        behavior={Platform.OS === 'ios'? 'padding': 'height'}
+        keyboardVerticalOffset={10}  
+      >
+        <ScrollView
+          bounces={false}
+          contentContainerStyle={{paddingBottom: 30}}
+          contentInsetAdjustmentBehavior="always"
+          overScrollMode="never"
+          showsVerticalScrollIndicator={false}
+          directionalLockEnabled={false}
+        >
           <View style={styles.formField}>
             <FormLabel label="Nome da carteira*" />
             <Input keyboardType="default" value={walletData.name} onChangeText={(value) => setWalletData(prevState => ({...prevState, name: value}))} />
@@ -59,8 +72,18 @@ export default function EditWallet() {
             <FormLabel label="Descrição da carteira" />
             <Input textArea multiline keyboardType="default" value={walletData.description} onChangeText={(value) => setWalletData(prevState => ({...prevState, description: value}))} />
           </View>
+          </ScrollView>
         </KeyboardAvoidingView>
-      </TouchableWithoutFeedback> 
+      </TouchableWithoutFeedback>
+      <View style={{position: 'absolute', bottom: 0}}> 
+        <BannerAd
+          unitId={adUnitIdBanner}
+          size={BannerAdSize.FULL_BANNER}
+          requestOptions={{
+            requestNonPersonalizedAdsOnly: true,
+          }}
+        />
+      </View>
     </View>
   )
 }

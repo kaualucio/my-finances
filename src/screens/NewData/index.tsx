@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { View, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, Platform, Alert, SafeAreaView } from 'react-native'
 import ModalSelector from 'react-native-modal-selector'
 
@@ -16,6 +16,14 @@ import { formatPriceValue } from '../../utils/formatPriceValue'
 import { CheckCircle } from 'phosphor-react-native'
 import { ScrollView } from 'react-native'
 import Spending from '../../databases/sqlite/services/Spending'
+import { AdEventType, InterstitialAd, TestIds } from 'react-native-google-mobile-ads'
+import {INTERSTITIAL_AD_UNIT_ID} from "react-native-dotenv"
+
+const adUnitIdInterstitial = __DEV__ ? TestIds.INTERSTITIAL : INTERSTITIAL_AD_UNIT_ID;
+const interstitial = InterstitialAd.createForAdRequest(adUnitIdInterstitial, {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ['finances', 'crypto', 'games', 'fashion'],
+});
 
 export default function NewData() {
   const { allMyWallets, handleRefetchHistory, currentWallet } = useWallet()
@@ -59,12 +67,13 @@ export default function NewData() {
       setType('Selecione o tipo'),
       setValue('')
       setSelectedWallet('Selecione a carteira')
+      interstitial.show();
       Alert.alert('Sucesso!', `Sua ${type.toLowerCase()} foi adicionada com sucesso com sucesso!`)
-     
     } catch (error) {
       console.log(error)
       Alert.alert('Algo deu errado :(', `Ocorreu um erro ao adicionar sua ${type.toLowerCase()}, tente novamente`)
     } finally {
+      setLoaded(false);
       setIsLoading(false)
     }
   }
@@ -72,6 +81,19 @@ export default function NewData() {
   function handleSelectWalletByName(value: string) {
     return allMyWallets.find(wallet => wallet.name === value).id
   }
+
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+      if(!loaded) {
+        const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+          setLoaded(true);
+        });
+        interstitial.load();
+    
+        return unsubscribe;
+      }
+  }, [loaded]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -155,7 +177,6 @@ export default function NewData() {
             <FormLabel label="Descrição" />
             <Input textArea multiline keyboardType="default"  value={data.description} onChangeText={value =>  setData(prevState => ({...prevState, description: value}))}  />
           </View>
-          {/* <ButtonWithoutIcon isLoading={isLoading} handleFunction={handleCreateIncome} title="Adicionar receita" /> */}
           </ScrollView>
          
         </KeyboardAvoidingView>

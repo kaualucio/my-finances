@@ -1,5 +1,5 @@
 import { View, KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback, Alert, Platform } from 'react-native'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { HeaderNavigation } from '../../components/HeaderNavigation'
 import { Input } from '../../components/Input'
 import { FormLabel } from '../../components/FormLabel'
@@ -7,6 +7,16 @@ import { styles } from './styles'
 import Wallet from '../../databases/sqlite/services/Wallet'
 import { useWallet } from '../../context/WalletsContext'
 import { CheckCircle } from 'phosphor-react-native'
+import { BannerAd, BannerAdSize, InterstitialAd, AdEventType, TestIds } from 'react-native-google-mobile-ads';
+import {BANNER_AD_UNIT_ID, INTERSTITIAL_AD_UNIT_ID} from "react-native-dotenv"
+
+const adUnitIdBanner = __DEV__ ? TestIds.BANNER : BANNER_AD_UNIT_ID;
+const adUnitIdInterstitial = __DEV__ ? TestIds.INTERSTITIAL : INTERSTITIAL_AD_UNIT_ID;
+
+const interstitial = InterstitialAd.createForAdRequest(adUnitIdInterstitial, {
+  requestNonPersonalizedAdsOnly: true,
+  keywords: ['fashion', 'clothing'],
+});
 export default function NewWallet() {
   const { handleRefetchData } = useWallet()
   const [isLoading, setIsLoading] = useState(false)
@@ -19,6 +29,9 @@ export default function NewWallet() {
 
   async function handleCreateWallet() {
     try {
+      if(!walletData.name) {
+        return Alert.alert('Campos inválidos', 'Escolha um nome para sua carteira, para continuar')
+      }
       setIsLoading(true)
       await Wallet.create(walletData)
       handleRefetchData()
@@ -28,14 +41,30 @@ export default function NewWallet() {
         maxSpend: '',
         description: '',
       })
+      interstitial.show()
       Alert.alert('Sucesso!', 'Sua carteira foi criada com sucesso!')
     } catch (error) {
+      console.log()
       Alert.alert('Algo deu errado :(!', 'Ocorreu um erro ao criar sua carteira, tente novamente')
     }finally {
       setIsLoading(false)
     }
    
   }
+
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+      if(!loaded) {
+        const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
+          setLoaded(true);
+        });
+        interstitial.load();
+    
+        return unsubscribe;
+      }
+  }, [loaded]);
+
 
   return (
     <View style={styles.container}>
@@ -64,6 +93,13 @@ export default function NewWallet() {
           </View>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback> 
+      <BannerAd
+        unitId={adUnitIdBanner}
+        size={BannerAdSize.FULL_BANNER}
+        requestOptions={{
+          requestNonPersonalizedAdsOnly: true,
+        }}
+      />
     </View>
   )
 }
