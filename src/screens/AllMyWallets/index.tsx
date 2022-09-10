@@ -9,11 +9,7 @@ import { useNavigation } from '@react-navigation/native'
 import { ButtonWithoutIcon } from '../../components/ButtonWithoutIcon'
 import { useWallet, Wallet } from '../../context/WalletsContext'
 import { formatPriceValue } from '../../utils/formatPriceValue'
-import { AdEventType, BannerAd, BannerAdSize, InterstitialAd, TestIds } from 'react-native-google-mobile-ads';
-import {BANNER_AD_UNIT_ID, INTERSTITIAL_AD_UNIT_ID} from "react-native-dotenv"
 
-const adUnitIdBanner = __DEV__ ? TestIds.BANNER : BANNER_AD_UNIT_ID;
-const adUnitIdInterstitial = __DEV__ ? TestIds.INTERSTITIAL : INTERSTITIAL_AD_UNIT_ID;
 
 const transition = (
   <Transition.Together>
@@ -23,16 +19,11 @@ const transition = (
   </Transition.Together>
 );
 
-const interstitial = InterstitialAd.createForAdRequest(adUnitIdInterstitial, {
-  requestNonPersonalizedAdsOnly: true,
-  keywords: ['fashion', 'clothing'],
-});
 export default function AllMyWallets() {
   const { allMyWallets, isLoading, currentWallet, handleDeleteWallet, getMonetaryWalletInformation } = useWallet()
   const ref = useRef<any>(null)
   const [currentOpen, setCurrentOpen] = useState<any>(null)
   const [listWalletInformation, setListWalletInformation] = useState<any>([])
-  const [loaded, setLoaded] = useState(false);
   const navigation = useNavigation()
   function handleOpenWalletInfo(walletId: string) {
     ref?.current.animateNextTransition()
@@ -62,8 +53,6 @@ export default function AllMyWallets() {
     const response = await handleDeleteWallet(walletId)
     const isTheCurrentWallet = walletId === currentWallet.id ? true : false
       if(response && isTheCurrentWallet) {
-        interstitial.show()
-        setLoaded(false)
         Alert.alert('Sucesso', 'Sua carteira foi deletada com sucesso!', [
           {
             text: 'Ok',
@@ -73,11 +62,8 @@ export default function AllMyWallets() {
           }
         ])
       }else if(response && !isTheCurrentWallet) {
-        setLoaded(false)
-        interstitial.show()
         Alert.alert('Sucesso', 'Sua carteira foi deletada com sucesso!')
       }else {
-        setLoaded(false)
         Alert.alert('Erro', 'Houve um erro ao deletar a carteira, tente novamente')
       }
   }
@@ -95,21 +81,6 @@ export default function AllMyWallets() {
       }
     ])
   }
-
-  
-
-  useEffect(() => {
-      console.log(loaded)
-      if(!loaded) {
-        const unsubscribe = interstitial.addAdEventListener(AdEventType.LOADED, () => {
-          setLoaded(true);
-        });
-        interstitial.load();
-    
-        return unsubscribe;
-      }
-  }, [loaded]);
-
 
   return (
     <View  
@@ -198,15 +169,7 @@ export default function AllMyWallets() {
           )
         )
       }
-       <View style={{position: 'absolute', bottom: 0}}>
-        <BannerAd
-          unitId={adUnitIdBanner}
-          size={BannerAdSize.FULL_BANNER}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
-       </View>
+
      </View>
   )
 }

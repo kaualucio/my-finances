@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "My Finances",
-    "slug": "My Finances",
+    "slug": "my-finances",
     "version": "1.0.0",
     "orientation": "portrait",
     "sdkVersion": "46.0.0",
@@ -24,12 +24,9 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#1B263B"
       },
       "package": "com.kaualucio992.app"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     }
   },
   "react-native-google-mobile-ads": {

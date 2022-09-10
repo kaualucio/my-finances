@@ -4,17 +4,16 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useFonts } from 'expo-font';
 import { StatusBar } from 'expo-status-bar';
 import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Poppins_200ExtraLight, Poppins_300Light, Poppins_400Regular, Poppins_500Medium, Poppins_700Bold } from '@expo-google-fonts/poppins'
+import { getStatusBarHeight } from 'react-native-iphone-x-helper'; 
+import moment from 'moment';
+import { Host } from 'react-native-portalize';
 
 import { THEME } from './src/global/styles/theme';
-import { getStatusBarHeight } from 'react-native-iphone-x-helper';
 import { Routes } from './src/routes';
 import { db } from './src/databases/sqlite';
 import { WalletContextProvider } from './src/context/WalletsContext';
-import moment from 'moment';
-import { Host } from 'react-native-portalize';
-import { TestIds } from 'react-native-google-mobile-ads';
 
 SplashScreen.preventAutoHideAsync()
 moment.updateLocale('br', {
@@ -74,7 +73,7 @@ function App() {
     return null;
   }
 
-  if(!fontsLoaded) return <Text>Carregando Fontes</Text>
+  if(!fontsLoaded) return null
 
   return (
     <GestureHandlerRootView style={styles.container} onLayout={onLayoutRootView}>

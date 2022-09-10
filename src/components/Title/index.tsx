@@ -4,7 +4,7 @@ import { styles } from './styles';
 
 function Title() {
   return (
-    <Text style={styles.title}>Nome App</Text>
+    <Text style={styles.title}>My Finances</Text>
   );
 }
 

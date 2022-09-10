@@ -8,9 +8,6 @@ import Wallet from '../../databases/sqlite/services/Wallet'
 import { useWallet } from '../../context/WalletsContext'
 import { useRoute } from '@react-navigation/native'
 import { CheckCircle } from 'phosphor-react-native'
-import { AdEventType, BannerAd, BannerAdSize, InterstitialAd, TestIds } from 'react-native-google-mobile-ads'
-import {BANNER_AD_UNIT_ID} from "react-native-dotenv"
-const adUnitIdBanner = __DEV__ ? TestIds.BANNER : BANNER_AD_UNIT_ID;
 
 export default function EditWallet() {
   const { handleRefetchData } = useWallet()
@@ -75,15 +72,6 @@ export default function EditWallet() {
           </ScrollView>
         </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
-      <View style={{position: 'absolute', bottom: 0}}> 
-        <BannerAd
-          unitId={adUnitIdBanner}
-          size={BannerAdSize.FULL_BANNER}
-          requestOptions={{
-            requestNonPersonalizedAdsOnly: true,
-          }}
-        />
-      </View>
     </View>
   )
 }
