@@ -1,29 +1,33 @@
-import { useNavigation } from '@react-navigation/native';
-import { CalendarBlank, ListDashes, Wallet } from 'phosphor-react-native';
 import React, { useEffect, useRef } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import { Modalize } from 'react-native-modalize';
+import { ScrollView, Text, TouchableOpacity, View, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import Animated, { FadeInUp, FadeOutDown, SlideInRight, SlideOutLeft } from 'react-native-reanimated';
-import { Balance } from '../../components/Balance';
-import { CalendarStatistics } from '../../components/CalendarStatistics';
-import { Header } from '../../components/Header';
+import { Modalize } from 'react-native-modalize';
+import { CalendarBlank, ListDashes, Wallet } from 'phosphor-react-native';
+
 import { HistoricItem } from '../../components/HistoricItem';
-import { ModalMenu } from '../../components/ModalMenu';
 import { ModalWallets } from '../../components/ModalWallets';
-import { Spinner } from '../../components/Spinner';
 import { TitleSection } from '../../components/TitleSection';
+import { ModalMenu } from '../../components/ModalMenu';
+import { Balance } from '../../components/Balance';
+import { Spinner } from '../../components/Spinner';
+import { Header } from '../../components/Header';
+
 import { useWallet } from '../../context/WalletsContext';
+
 import { THEME } from '../../global/styles/theme';
 import { styles } from './styles';
+import { BarChart, LineChart } from 'react-native-chart-kit';
+import { sortDataBudget } from '../../utils/sortDataBudget';
 
 const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez']
 
 function HomeScreen() {
-  const { currentWallet, allMyWallets, isLoading, isLoadingChangeWalletData, lastActivityInCurrentWallet, totalBudget } = useWallet()
+  const { handleSortDataStatistics, currentWallet, allMyWallets, isLoading, isLoadingChangeWalletData, lastActivityInCurrentWallet, totalBudget } = useWallet()
   const modalRef = useRef<Modalize>(null)
   const modalRef2 = useRef<Modalize>(null)
   const navigation = useNavigation()
-
+  let budgetData = sortDataBudget(handleSortDataStatistics())
   function openModal() {
     if(modalRef.current) {
       modalRef.current.open()
@@ -46,6 +50,12 @@ function HomeScreen() {
     }
   }, [isLoadingChangeWalletData])
 
+
+  // useEffect(() => {
+  //   if(isLoading) {
+  //     
+  //   }
+  // }, [isLoading])
 
   if(isLoading) return <Spinner />
 
@@ -92,21 +102,54 @@ function HomeScreen() {
                 <View style={styles.section}>
                   <View style={styles.headerSection}>
                     <TitleSection icon={<CalendarBlank size={24} color={THEME.colors.black} weight="bold" />} title="Dados Mensais" />
-                    {/* <TouchableOpacity>
-                      <Text style={styles.linkSection}>Ver Todos</Text>
-                    </TouchableOpacity> */}
                   </View>
                   <ScrollView  
-                    
                     horizontal
                     showsHorizontalScrollIndicator={false}
                   >
-                    {
-                      months.map((item) => (
-                        <CalendarStatistics key={item} month={item} />
-                      ))
-                    }
-                  </ScrollView>
+                  <LineChart 
+                    bezier
+                    data={{
+                      labels: months,
+                      datasets: [
+                        {
+                          data: budgetData.incomes.length > 0 ? budgetData.incomes : [0],
+                          color: (opacity = 1) => `rgba(142, 202, 230, ${opacity})`,
+                          strokeWidth: 4
+                        },
+                        {
+                          data: budgetData.spendings.length > 0 ? budgetData.spendings : [0],
+                          color: (opacity = 1) => `rgba(255, 183, 3, ${opacity})` 
+                        },
+                      ]
+                    }}
+                    width={500} // from react-native
+                    height={220}
+                    chartConfig={{
+                      backgroundGradientFrom: "#778DA9",
+                      backgroundGradientFromOpacity: 1,
+                      backgroundGradientTo: "#415A77",
+                      backgroundGradientToOpacity: 1,
+                      color: (opacity = 1) => `rgba(142, 202, 230, ${opacity})`,
+                      strokeWidth: 3,
+                      barPercentage: 0.5,
+                      useShadowColorFromDataset: false,
+                      labelColor: () => THEME.colors.white,
+                      propsForLabels: {
+                        fontSize: 12,
+                        fontStyle: 'italic',
+                        fontWeight: 'bold',
+                      },
+                      
+                    }}
+                    yAxisLabel="R$"
+                    yAxisSuffix=""
+                    style={{
+                      borderRadius: 8,
+                    }}
+                    />
+                    </ScrollView>
+
                 </View>
                 <View style={styles.section}>
                   <View style={styles.headerSection}>

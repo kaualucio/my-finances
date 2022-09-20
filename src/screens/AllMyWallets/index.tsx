@@ -86,7 +86,7 @@ export default function AllMyWallets() {
     <View  
       style={styles.container}
     >
-      <HeaderNavigation title="Minhas Carteitas" icon={<PlusCircle size={28} color={THEME.colors.white} />} handleFunction={handleGoToCreateWalletScreen} />
+      <HeaderNavigation title="Minhas Carteiras" icon={<PlusCircle size={28} color={THEME.colors.white} />} handleFunction={handleGoToCreateWalletScreen} />
       {
         allMyWallets.length > 0 
         ? (

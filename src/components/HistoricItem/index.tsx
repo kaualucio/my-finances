@@ -32,8 +32,8 @@ export function HistoricItem({item}: HistoricItemProps) {
 
   return (
     <Animated.View 
-      entering={SlideInRight.delay(130)}
-      exiting={SlideOutLeft.delay(100)}
+      entering={SlideInRight}
+      exiting={SlideOutLeft}
       layout={Layout.springify()}  
     >
      <TouchableOpacity
